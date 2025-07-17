@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lokalise Translations by Date</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    label {
+      margin-right: 10px;
+    }
+    button {
+      padding: 5px 10px;
+      margin-left: 10px;
+    }
+    pre {
+      background-color: #f4f4f4;
+      padding: 10px;
+      border: 1px solid #ddd;
+      max-height: 500px;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lokalise Translations by Date</h1>
+
+  <div>
+    <label>From: <input type="date" id="date_from"></label>
+    <label>To: <input type="date" id="date_to"></label>
+    <button onclick="filterTranslations()">Filter</button>
+  </div>
+
+  <h2>Results</h2>
+  <pre id="results">Select a date range and click "Filter" to view translations...</pre>
+
+  <script>
+    async function filterTranslations() {
+      const dateFrom = document.getElementById('date_from').value;
+      const dateTo = document.getElementById('date_to').value;
+
+      if (!dateFrom || !dateTo) {
+        alert("Please select both From and To dates.");
+        return;
+      }
+
+      const res = await fetch('/filter_translations', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ date_from: dateFrom, date_to: dateTo, language: "en" })
+      });
+
+      const data = await res.json();
+      if (data.error) {
+        document.getElementById('results').textContent = `Error: ${data.error}`;
+      } else {
+        document.getElementById('results').textContent = JSON.stringify(data, null, 2);
+      }
+    }
+  </script>
+</body>
+</html>
